@@ -1,8 +1,4 @@
-.PHONY : clean doc
-
-COMPILER= g++
-CPPFLAGS= -fPIC -g -Wall
-LDFLAGS = -shared
+.PHONY : clean doc build examples
 
 SRCDIR   = src
 INCDIR   = includes
@@ -15,20 +11,40 @@ OBJECTS = $(SOURCES:.cpp=.o)
 LIBNAME = libENN
 TARGET = $(BUILDDIR)/$(LIBNAME).so
 
-all: build clean
+COMPILER= g++
+CPPFLAGS= -I$(INCDIR) -std=c++11 -fPIC -g -Wall -O3
+LDFLAGS = -shared
+
+all: reset build clean
+
+reset : 
+	@reset
+	@echo '**************************'
+	@echo '**** Compiling ENNlib ****'
+	@echo '**************************'
 
 build: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	@echo "Compiling library"
-	$(COMPILER) $(CFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
-	@echo "Library compiled"
+	@echo "[Info] Compiling library"
+	@$(COMPILER) $(CPPFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
+	@echo "[Info] Library compiled"
+
+%.o : %.cpp
+	@echo '[Info] (Compiling '$<')'
+	@$(COMPILER) $< $(CPPFLAGS) -c -o $(basename $<).o
 
 clean:
-	@echo "Cleaning object files and target"
-	@rm -f $(OBJECTS) $(TARGET)
+	@echo "[Info] Cleaning object files"
+	@rm -f $(OBJECTS)
 
 doc:
-	@echo "Generating documentation"
-	doxygen Doxyfile
-	@echo "Documentation generated"
+	@echo "[Info] Generating documentation"
+	@doxygen Doxyfile
+	@echo "[Info] Documentation generated"
+
+examples:
+	@echo '****************************'
+	@echo '**** Compiling examples ****'
+	@echo '****************************'
+	@$(MAKE) -C ./examples examples
