@@ -26,8 +26,8 @@ However, it was programmed with optimisation in mind and was structured to be ea
 
 ## Compile
 
-Simply open your terminal at the root of the projet and type `make`. This will build the library.⋅⋅
-To compile the examples, type `make examples`.⋅⋅
+Simply open your terminal at the root of the projet and type `make`. This will build the library.  
+To compile the examples, type `make examples`.  
 To create the documentation, type `make doc` (should already be done in the repository).
 
 ## Documentation
