@@ -155,9 +155,14 @@ void NeuralNetwork::connect(unsigned sourceLayer, unsigned sourceIndex, unsigned
 	Neuron * src = getNeuron(sourceLayer, sourceIndex);
 	Neuron * dest = getNeuron(destinationLayer, destinationIndex);
 
-	ConnectionPtr connection = std::make_shared<Connection>(src, dest);
-	src->addOutput(connection);
-	dest->addInput(connection);
+	connect(src, dest);
+}
+
+void NeuralNetwork::connect(Neuron * source, Neuron * destination)
+{
+	ConnectionPtr connection = std::make_shared<Connection>(source, destination);
+	source->addOutput(connection);
+	destination->addInput(connection);
 	_connections.push_back(connection);
 }
 
@@ -177,6 +182,22 @@ bool NeuralNetwork::connectionExists(unsigned sourceLayer, unsigned sourceIndex,
 	return getNeuron(sourceLayer, sourceIndex)->connectedToDestination(getNeuron(destinationLayer, destinationIndex));
 }
 
+void NeuralNetwork::connectAllLayers()
+{
+	//For each neuron from the first layer to the second to last layer
+	for (auto layer = _neurons.begin() ; layer != std::prev(_neurons.end()) ; layer++)
+	{
+		for (auto neuron = layer->begin() ; neuron != layer->end() ; neuron++)
+		{
+			//Connect the neuron to all the neurons of the next layer
+			for (auto nextLayerNeuron = std::next(layer)->begin() ; nextLayerNeuron != std::next(layer)->end() ; nextLayerNeuron++)
+			{
+				connect(&(*neuron), &(*nextLayerNeuron));
+			}
+		}
+	}
+}	
+
 void NeuralNetwork::addLearningPoint(LearningVector const & inputs, LearningVector const & outputs)
 {
 	if (getNumberOfNeuronsOnLayer(0) != inputs.size())
@@ -192,6 +213,16 @@ void NeuralNetwork::addLearningPoint(LearningVector const & inputs, LearningVect
 	}
 		
 	_learningSet.push_back(std::make_pair(inputs, outputs));
+}
+
+void NeuralNetwork::clearLearningSet()
+{
+	_learningSet.clear();
+}
+
+void NeuralNetwork::appendLearningSet(LearningSet const & set)
+{
+	_learningSet.insert(_learningSet.begin(), set.begin(), set.end());
 }
 
 void NeuralNetwork::setLearningRate(float learningRate)
@@ -307,10 +338,14 @@ void NeuralNetwork::computeOutputs()
 {
 	for (auto layer = std::next(_neurons.begin()) ; layer != _neurons.end() ; layer++) //We should never compute the input layer (it is fixed by the user)
 	{
+		#ifdef ENABLE_OPENMP
+		__gnu_parallel::for_each(layer->begin(), layer->end(), [](Neuron & neuron){ neuron.compute(); });
+		#else
 		for (auto neuron = layer->begin() ; neuron != layer->end() ; neuron++)
 		{
 			neuron->compute();
 		}
+		#endif
 	}
 }
 
@@ -330,10 +365,14 @@ void NeuralNetwork::computeDerivativesOfErrorToNets()
 {
 	for (auto layer = _neurons.rbegin() ; layer != std::prev(_neurons.rend()) ; layer++) //We're going backward from the last layer to the second layer (intput neurons cannot have any contribution to the network error)
 	{
+		#ifdef ENABLE_OPENMP
+		__gnu_parallel::for_each(layer->begin(), layer->end(), [](Neuron & neuron){ neuron.computeDerativeOfErrorToNetValue(); });
+		#else
 		for (auto neuron = layer->begin() ; neuron != layer->end() ; neuron++)
 		{
 			neuron->computeDerativeOfErrorToNetValue();
 		}
+		#endif
 	}
 }
 

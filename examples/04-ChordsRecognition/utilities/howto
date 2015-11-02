@@ -1,0 +1,5 @@
+Usage: 
+cat [input file] | ./increase_notes > [output file]
+
+To increase by 2: 
+cat [input file] | ./increase_notes | ./increase_notes > [output file]

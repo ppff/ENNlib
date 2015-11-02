@@ -40,7 +40,7 @@ int main()
 	
 	//Let's train the neuron network and see what we get
 	float learningRate = 0.1;
-	std::cout << "The learning rate is automatically set to 0.1." << std::flush;
+	std::cout << "The learning rate is automatically set to 0.1." << std::endl;
 	
 	std::cout << std::endl;
 	std::cout << "Starting algorithm..." << std::endl;

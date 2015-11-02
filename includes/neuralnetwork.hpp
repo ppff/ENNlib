@@ -30,8 +30,11 @@ class NeuralNetwork
 		void connect(unsigned sourceLayer, unsigned sourceIndex, unsigned destinationLayer, unsigned destinationIndex);
 		void setConnectionWeight(unsigned sourceLayer, unsigned sourceIndex, unsigned destinationLayer, unsigned destinationIndex, float weight);
 		bool connectionExists(unsigned sourceLayer, unsigned sourceIndex, unsigned destinationLayer, unsigned destinationIndex) const;
+		void connectAllLayers();
 		
 		void addLearningPoint(LearningVector const & inputs, LearningVector const & outputs);
+		void clearLearningSet();
+		void appendLearningSet(LearningSet const & set);
 		void setLearningRate(float learningRate);
 		unsigned train(Verbose verbose = Verbose::None);
 		
@@ -45,6 +48,8 @@ class NeuralNetwork
 		std::list< std::list<Neuron> > _neurons;
 		std::list<ConnectionPtr> _connections;
 		LearningSet _learningSet;
+		
+		void connect(Neuron * source, Neuron * destination);
 		
 		void setBiasNeurons(float constantValue);
 		void setInputs(LearningVector const & values);

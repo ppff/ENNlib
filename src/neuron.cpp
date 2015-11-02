@@ -80,7 +80,7 @@ void Neuron::setConnectionWeight(Neuron * destination, float newWeight)
 	
 	ERROR_MSG("Cannot change connection weight because connection can not be found");
 }
-		
+
 void Neuron::compute()
 {
 	//If it doesn't have inputs, then it's a bias neuron and we shouldn't do anything

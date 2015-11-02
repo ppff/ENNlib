@@ -12,7 +12,7 @@ LIBNAME = libENN
 TARGET = $(BUILDDIR)/$(LIBNAME).so
 
 COMPILER= g++
-CPPFLAGS= -I$(INCDIR) -std=c++11 -fPIC -g -Wall -O3
+CPPFLAGS= -I$(INCDIR) -std=c++11 -fPIC -g -Wall -O3 -fopenmp
 LDFLAGS = -shared
 
 all: reset build clean

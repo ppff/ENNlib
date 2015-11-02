@@ -12,6 +12,12 @@
 #include <sstream>
 
 #define ENABLE_DEBUG
+#define ENABLE_OPENMP
+
+#ifdef ENABLE_OPENMP
+#define GLIBCXX_PARALLEL
+#include <parallel/algorithm>
+#endif
 
 namespace ENN
 {
